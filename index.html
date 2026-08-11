@@ -1,37 +1,63 @@
-<!DOCTYPE html>
-<html lang="fr">
+<select id="matricule">
+  <option value="">-- Choisissez votre nom --</option>
+</select>
+<button onclick="enregistrerPresence()">✅ Arrivée</button>
+<button onclick="enregistrerDepartFn()">🚪 Départ</button>
+<p id="message"></p>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+const BASE_URL = "https://script.google.com/macros/s/AKfycbzxWlsBEDujEp9qhZ7eyP9cToSbPTSGoeV2pqd_zgL0sEH1dyn8bbqlXdAJjte4-KnE/exec";
 
-    <title>Pointage du personnel</title>
+fetch(BASE_URL + "?action=listeMembres")
+  .then(r => r.json())
+  .then(membres => {
+    const select = document.getElementById("matricule");
+    membres.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.matricule;
+      opt.textContent = m.nom;
+      select.appendChild(opt);
+    });
+  });
 
-    <link rel="stylesheet" href="style.css">
-</head>
+function enregistrerPresence() {
+  const matricule = document.getElementById("matricule").value;
+  const message = document.getElementById("message");
+  if (!matricule) { message.textContent = "Veuillez choisir votre nom."; return; }
+  message.textContent = "Enregistrement en cours...";
 
-<body>
+  fetch(BASE_URL + "?action=arrivee&matricule=" + encodeURIComponent(matricule))
+    .then(r => r.text())
+    .then(resultat => {
+      if (resultat === "DEJA_POINTE") {
+        message.textContent = "⚠️ Vous avez déjà pointé aujourd'hui.";
+      } else if (resultat.startsWith("Présence enregistrée")) {
+        const [, statut, heure] = resultat.split("|");
+        message.textContent = statut === "Retard"
+          ? "🟠 Arrivée enregistrée à " + heure + " (Retard)"
+          : "✅ Arrivée enregistrée à " + heure;
+      } else {
+        message.textContent = "❌ Une erreur est survenue.";
+      }
+    })
+    .catch(() => { message.textContent = "❌ Impossible d'enregistrer."; });
+}
 
-    <div class="container">
+function enregistrerDepartFn() {
+  const matricule = document.getElementById("matricule").value;
+  const message = document.getElementById("message");
+  if (!matricule) { message.textContent = "Veuillez choisir votre nom."; return; }
 
-        <h1>Gestion des présences</h1>
-
-        <h2>Pointage du personnel</h2>
-
-        <p>Veuillez entrer votre matricule</p>
-
-        <input type="text" id="matricule" placeholder="Exemple : MAT-001">
-
-        <button onclick="enregistrerPresence()">
-            Enregistrer ma présence
-        </button>
-
-        <p id="message"></p>
-
-    </div>
-
-    <script src="script.js"></script>
-
-</body>
-
-</html>
+  fetch(BASE_URL + "?action=depart&matricule=" + encodeURIComponent(matricule))
+    .then(r => r.text())
+    .then(resultat => {
+      if (resultat === "PAS_D_ARRIVEE_AUJOURDHUI") {
+        message.textContent = "⚠️ Pointez d'abord votre arrivée.";
+      } else if (resultat === "DEPART_DEJA_ENREGISTRE") {
+        message.textContent = "⚠️ Départ déjà enregistré.";
+      } else {
+        message.textContent = "✅ " + resultat.split("|")[1] + " — départ enregistré";
+      }
+    });
+}
+</script>
