@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Tableau de bord</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1 { color: #ff6600; text-align: center; }
+.cartes {
+    display: flex;
+    gap: 15px;
+    margin: 25px 0;
+}
+.carte {
+    flex: 1;
+    background-color: #fff4ec;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+.carte .nombre { font-size: 32px; font-weight: bold; color: #ff6600; }
+.carte .label { color: #555; font-size: 14px; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+th { background-color: #ff6600; color: white; }
+.retard { color: #e65c00; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 Tableau de bord</h1>
+
+    <div class="cartes">
+        <div class="carte">
+            <div class="nombre" id="nbPresents">–</div>
+            <div class="label">Présents aujourd'hui</div>
+        </div>
+        <div class="carte">
+            <div class="nombre" id="nbRetards">–</div>
+            <div class="label">Retards aujourd'hui</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr><th>Nom</th><th>Date</th><th>Heure</th><th>Statut</th></tr>
+        </thead>
+        <tbody id="tableauHistorique"></tbody>
+    </table>
+</div>
+
+<script>
+const BASE_URL = "https://script.google.com/macros/s/AKfycbzxWlsBEDujEp9qhZ7eyP9cToSbPTSGoeV2pqd_zgL0sEH1dyn8bbqlXdAJjte4-KnE/exec";
+
+fetch(BASE_URL + "?action=stats")
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("nbPresents").textContent = data.presentsAujourdhui;
+    document.getElementById("nbRetards").textContent = data.retardsAujourdhui;
+
+    const corps = document.getElementById("tableauHistorique");
+    data.historique.forEach(ligne => {
+      const tr = document.createElement("tr");
+      const classeStatut = ligne.statut === "Retard" ? "retard" : "";
+      tr.innerHTML =
+        "<td>" + ligne.nom + "</td>" +
+        "<td>" + ligne.date + "</td>" +
+        "<td>" + ligne.heure + "</td>" +
+        "<td class='" + classeStatut + "'>" + ligne.statut + "</td>";
+      corps.appendChild(tr);
+    });
+  });
+</script>
+
+</body>
+</html>
