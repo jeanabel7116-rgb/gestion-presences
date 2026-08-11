@@ -1,9 +1,85 @@
-<select id="matricule">
-  <option value="">-- Choisissez votre nom --</option>
-</select>
-<button onclick="enregistrerPresence()">✅ Arrivée</button>
-<button onclick="enregistrerDepartFn()">🚪 Départ</button>
-<p id="message"></p>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Pointage des membres</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    background-color: white;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #ff6600;
+}
+
+h2 {
+    color: #333333;
+}
+
+p {
+    color: #555555;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 12px 20px;
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #e65c00;
+}
+
+#message {
+    margin-top: 20px;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🕐 Pointage</h1>
+    <h2>Choisissez votre nom</h2>
+
+    <select id="matricule">
+        <option value="">-- Choisissez votre nom --</option>
+    </select>
+
+    <div>
+        <button onclick="enregistrerPresence()">✅ Arrivée</button>
+        <button onclick="enregistrerDepartFn()">🚪 Départ</button>
+    </div>
+
+    <p id="message"></p>
+</div>
 
 <script>
 const BASE_URL = "https://script.google.com/macros/s/AKfycbzxWlsBEDujEp9qhZ7eyP9cToSbPTSGoeV2pqd_zgL0sEH1dyn8bbqlXdAJjte4-KnE/exec";
@@ -61,3 +137,6 @@ function enregistrerDepartFn() {
     });
 }
 </script>
+
+</body>
+</html>
