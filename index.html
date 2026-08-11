@@ -10,7 +10,6 @@ body {
     margin: 0;
     padding: 0;
 }
-
 .container {
     width: 400px;
     margin: 100px auto;
@@ -20,19 +19,9 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
-h1 {
-    color: #ff6600;
-}
-
-h2 {
-    color: #333333;
-}
-
-p {
-    color: #555555;
-}
-
+h1 { color: #ff6600; }
+h2 { color: #333333; }
+p { color: #555555; }
 select {
     width: 100%;
     padding: 12px;
@@ -41,7 +30,6 @@ select {
     border-radius: 5px;
     border: 1px solid #ccc;
 }
-
 button {
     padding: 12px 20px;
     background-color: #ff6600;
@@ -52,15 +40,8 @@ button {
     font-size: 16px;
     margin: 5px;
 }
-
-button:hover {
-    background-color: #e65c00;
-}
-
-#message {
-    margin-top: 20px;
-    font-weight: bold;
-}
+button:hover { background-color: #e65c00; }
+#message { margin-top: 20px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -73,10 +54,7 @@ button:hover {
         <option value="">-- Choisissez votre nom --</option>
     </select>
 
-    <div>
-        <button onclick="enregistrerPresence()">✅ Arrivée</button>
-        <button onclick="enregistrerDepartFn()">🚪 Départ</button>
-    </div>
+    <button onclick="enregistrerPresence()">✅ Enregistrer mon arrivée</button>
 
     <p id="message"></p>
 </div>
@@ -117,24 +95,6 @@ function enregistrerPresence() {
       }
     })
     .catch(() => { message.textContent = "❌ Impossible d'enregistrer."; });
-}
-
-function enregistrerDepartFn() {
-  const matricule = document.getElementById("matricule").value;
-  const message = document.getElementById("message");
-  if (!matricule) { message.textContent = "Veuillez choisir votre nom."; return; }
-
-  fetch(BASE_URL + "?action=depart&matricule=" + encodeURIComponent(matricule))
-    .then(r => r.text())
-    .then(resultat => {
-      if (resultat === "PAS_D_ARRIVEE_AUJOURDHUI") {
-        message.textContent = "⚠️ Pointez d'abord votre arrivée.";
-      } else if (resultat === "DEPART_DEJA_ENREGISTRE") {
-        message.textContent = "⚠️ Départ déjà enregistré.";
-      } else {
-        message.textContent = "✅ " + resultat.split("|")[1] + " — départ enregistré";
-      }
-    });
 }
 </script>
 
