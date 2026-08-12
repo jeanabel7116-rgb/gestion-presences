@@ -22,13 +22,14 @@ body {
 h1 { color: #ff6600; }
 h2 { color: #333333; }
 p { color: #555555; }
-select {
+select, input {
     width: 100%;
     padding: 12px;
     margin: 15px 0;
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 button {
     padding: 12px 20px;
@@ -54,6 +55,8 @@ button:hover { background-color: #e65c00; }
         <option value="">-- Choisissez votre nom --</option>
     </select>
 
+    <input type="password" id="pin" placeholder="Votre code secret (4 chiffres)" maxlength="4" inputmode="numeric">
+
     <button onclick="enregistrerPresence()">✅ Enregistrer mon arrivée</button>
 
     <p id="message"></p>
@@ -76,20 +79,27 @@ fetch(BASE_URL + "?action=listeMembres")
 
 function enregistrerPresence() {
   const matricule = document.getElementById("matricule").value;
+  const pin = document.getElementById("pin").value;
   const message = document.getElementById("message");
+
   if (!matricule) { message.textContent = "Veuillez choisir votre nom."; return; }
+  if (!pin || pin.length !== 4) { message.textContent = "Veuillez entrer votre code à 4 chiffres."; return; }
+
   message.textContent = "Enregistrement en cours...";
 
-  fetch(BASE_URL + "?action=arrivee&matricule=" + encodeURIComponent(matricule))
+  fetch(BASE_URL + "?action=arrivee&matricule=" + encodeURIComponent(matricule) + "&pin=" + encodeURIComponent(pin))
     .then(r => r.text())
     .then(resultat => {
-      if (resultat === "DEJA_POINTE") {
+      if (resultat === "PIN_INCORRECT") {
+        message.textContent = "❌ Code incorrect. Vérifiez votre code secret.";
+      } else if (resultat === "DEJA_POINTE") {
         message.textContent = "⚠️ Vous avez déjà pointé aujourd'hui.";
       } else if (resultat.startsWith("Présence enregistrée")) {
         const [, statut, heure] = resultat.split("|");
         message.textContent = statut === "Retard"
           ? "🟠 Arrivée enregistrée à " + heure + " (Retard)"
           : "✅ Arrivée enregistrée à " + heure;
+        document.getElementById("pin").value = "";
       } else {
         message.textContent = "❌ Une erreur est survenue.";
       }
